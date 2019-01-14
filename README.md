@@ -1,2 +1,1 @@
-# CyberSecurity_Apps
-Cryptography, Penetration testing, Web etc.
+Cryptography apps, different ciphers etc.
