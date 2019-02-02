@@ -1,5 +1,4 @@
-
-class small_des(object):
+class big_des(object):
     def __init__(self, key_, round_amount_):
         self.temp = 0
         self.key = key_ & 0b11111111111111111111111111111111111111111111111111111111
@@ -104,8 +103,6 @@ class small_des(object):
                     ((self.temp & 0b0000000000000010000000000000000000000000000000000000000000000000) >> 48) | \
                     ((self.temp & 0b0000001000000000000000000000000000000000000000000000000000000000) >> 57)
 
-
-
     def PblockEnd(self):
         self.temp = ((self.temp & 0b0000000000000000000000000000000000000001000000000000000000000000) << 39) | \
                     ((self.temp & 0b0000000100000000000000000000000000000000000000000000000000000000) << 6) | \
@@ -172,8 +169,6 @@ class small_des(object):
                     ((self.temp & 0b0000000000000000000000000000000000000000000000000000000010000000) >> 6) | \
                     ((self.temp & 0b0000000000000000000000001000000000000000000000000000000000000000) >> 39)
 
-
-
     def Round(self, round_key):
         left = ((self.temp & 0b1111111111111111111111111111111100000000000000000000000000000000) >> 32)
         right = ((self.temp & 0b0000000000000000000000000000000011111111111111111111111111111111) >> 0)
@@ -209,1167 +204,78 @@ class small_des(object):
         # XOR
         result = right ^ round_key
 
-        if(len(bin(result)[2:]) < 48):
-            a = 48 - len(bin(result)[2:])
-            result = (a * '0') + bin(result)[2:]
-        else:
-            result = bin(result)[2:]
-        # S-box
-        # S1
-        test = (result)[:-42]
-        line = test[0] + test[-1]
-        column = test[1:-1]
+        Sbox = [
+            #Sbox1
+            14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
+            0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
+            4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
+            15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13,
 
-        if (line == '00' and column == '0000'):
-            result1 = 14
-        elif (line == '00' and column == '0001'):
-            result1 = 4
-        elif (line == '00' and column == '0010'):
-            result1 = 13
-        elif (line == '00' and column == '0011'):
-            result1 = 1
-        elif (line == '00' and column == '0100'):
-            result1 = 2
-        elif (line == '00' and column == '0101'):
-            result1 = 15
-        elif (line == '00' and column == '0110'):
-            result1 = 11
-        elif (line == '00' and column == '0111'):
-            result1 = 8
-        elif (line == '00' and column == '1000'):
-            result1 = 3
-        elif (line == '00' and column == '1001'):
-            result1 = 10
-        elif (line == '00' and column == '1010'):
-            result1 = 6
-        elif (line == '00' and column == '1011'):
-            result1 = 12
-        elif (line == '00' and column == '1100'):
-            result1 = 5
-        elif (line == '00' and column == '1101'):
-            result1 = 9
-        elif (line == '00' and column == '1110'):
-            result1 = 0
-        elif (line == '00' and column == '1111'):
-            result1 = 7
+            #Sbox2
+            15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10,
+            3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5,
+            0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15,
+            13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9,
 
-        if (line == '01' and column == '0000'):
-            result1 = 0
-        elif (line == '01' and column == '0001'):
-            result1 = 15
-        elif (line == '01' and column == '0010'):
-            result1 = 7
-        elif (line == '01' and column == '0011'):
-            result1 = 4
-        elif (line == '01' and column == '0100'):
-            result1 = 14
-        elif (line == '01' and column == '0101'):
-            result1 = 2
-        elif (line == '01' and column == '0110'):
-            result1 = 13
-        elif (line == '01' and column == '0111'):
-            result1 = 1
-        elif (line == '01' and column == '1000'):
-            result1 = 10
-        elif (line == '01' and column == '1001'):
-            result1 = 6
-        elif (line == '01' and column == '1010'):
-            result1 = 12
-        elif (line == '01' and column == '1011'):
-            result1 = 11
-        elif (line == '01' and column == '1100'):
-            result1 = 9
-        elif (line == '01' and column == '1101'):
-            result1 = 5
-        elif (line == '01' and column == '1110'):
-            result1 = 3
-        elif (line == '01' and column == '1111'):
-            result1 = 8
+            #Sbox3
+            10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8,
+            13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1,
+            13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7,
+            1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12,
 
-        if (line == '10' and column == '0000'):
-            result1 = 4
-        elif (line == '10' and column == '0001'):
-            result1 = 1
-        elif (line == '10' and column == '0010'):
-            result1 = 14
-        elif (line == '10' and column == '0011'):
-            result1 = 8
-        elif (line == '10' and column == '0100'):
-            result1 = 13
-        elif (line == '10' and column == '0101'):
-            result1 = 6
-        elif (line == '10' and column == '0110'):
-            result1 = 2
-        elif (line == '10' and column == '0111'):
-            result1 = 11
-        elif (line == '10' and column == '1000'):
-            result1 = 15
-        elif (line == '10' and column == '1001'):
-            result1 = 12
-        elif (line == '10' and column == '1010'):
-            result1 = 9
-        elif (line == '10' and column == '1011'):
-            result1 = 7
-        elif (line == '10' and column == '1100'):
-            result1 = 3
-        elif (line == '10' and column == '1101'):
-            result1 = 10
-        elif (line == '10' and column == '1110'):
-            result1 = 5
-        elif (line == '10' and column == '1111'):
-            result1 = 0
+            #Sbox4
+            7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15,
+            13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9,
+            10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4,
+            3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14,
 
-        if (line == '11' and column == '0000'):
-            result1 = 15
-        elif (line == '11' and column == '0001'):
-            result1 = 12
-        elif (line == '11' and column == '0010'):
-            result1 = 8
-        elif (line == '11' and column == '0011'):
-            result1 = 2
-        elif (line == '11' and column == '0100'):
-            result1 = 4
-        elif (line == '11' and column == '0101'):
-            result1 = 9
-        elif (line == '11' and column == '0110'):
-            result1 = 1
-        elif (line == '11' and column == '0111'):
-            result1 = 7
-        elif (line == '11' and column == '1000'):
-            result1 = 5
-        elif (line == '11' and column == '1001'):
-            result1 = 11
-        elif (line == '11' and column == '1010'):
-            result1 = 3
-        elif (line == '11' and column == '1011'):
-            result1 = 14
-        elif (line == '11' and column == '1100'):
-            result1 = 10
-        elif (line == '11' and column == '1101'):
-            result1 = 0
-        elif (line == '11' and column == '1110'):
-            result1 = 6
-        elif (line == '11' and column == '1111'):
-            result1 = 13
+            #Sbox5
+            2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9,
+            14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6,
+            4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14,
+            11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3,
 
-        # S2
-        test = (result)[6:-36]
-        line = test[0] + test[-1]
-        column = test[1:-1]
+            #Sbox6
+            12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11,
+            10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8,
+            9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6,
+            4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13,
 
-        if (line == '00' and column == '0000'):
-            result2 = 15
-        elif (line == '00' and column == '0001'):
-            result2 = 1
-        elif (line == '00' and column == '0010'):
-            result2 = 8
-        elif (line == '00' and column == '0011'):
-            result2 = 14
-        elif (line == '00' and column == '0100'):
-            result2 = 6
-        elif (line == '00' and column == '0101'):
-            result2 = 11
-        elif (line == '00' and column == '0110'):
-            result2 = 3
-        elif (line == '00' and column == '0111'):
-            result2 = 4
-        elif (line == '00' and column == '1000'):
-            result2 = 9
-        elif (line == '00' and column == '1001'):
-            result2 = 7
-        elif (line == '00' and column == '1010'):
-            result2 = 2
-        elif (line == '00' and column == '1011'):
-            result2 = 13
-        elif (line == '00' and column == '1100'):
-            result2 = 12
-        elif (line == '00' and column == '1101'):
-            result2 = 0
-        elif (line == '00' and column == '1110'):
-            result2 = 5
-        elif (line == '00' and column == '1111'):
-            result2 = 10
+            #Sbox7
+            4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1,
+            13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6,
+            1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2,
+            6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12,
 
-        if (line == '01' and column == '0000'):
-            result2 = 3
-        elif (line == '01' and column == '0001'):
-            result2 = 13
-        elif (line == '01' and column == '0010'):
-            result2 = 4
-        elif (line == '01' and column == '0011'):
-            result2 = 7
-        elif (line == '01' and column == '0100'):
-            result2 = 15
-        elif (line == '01' and column == '0101'):
-            result2 = 2
-        elif (line == '01' and column == '0110'):
-            result2 = 8
-        elif (line == '01' and column == '0111'):
-            result2 = 14
-        elif (line == '01' and column == '1000'):
-            result2 = 12
-        elif (line == '01' and column == '1001'):
-            result2 = 0
-        elif (line == '01' and column == '1010'):
-            result2 = 1
-        elif (line == '01' and column == '1011'):
-            result2 = 10
-        elif (line == '01' and column == '1100'):
-            result2 = 6
-        elif (line == '01' and column == '1101'):
-            result2 = 9
-        elif (line == '01' and column == '1110'):
-            result2 = 11
-        elif (line == '01' and column == '1111'):
-            result2 = 5
+            #Sbox8
+            13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
+            1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2,
+            7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
+            2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
 
-        if (line == '10' and column == '0000'):
-            result2 = 0
-        elif (line == '10' and column == '0001'):
-            result2 = 14
-        elif (line == '10' and column == '0010'):
-            result2 = 7
-        elif (line == '10' and column == '0011'):
-            result2 = 11
-        elif (line == '10' and column == '0100'):
-            result2 = 10
-        elif (line == '10' and column == '0101'):
-            result2 = 4
-        elif (line == '10' and column == '0110'):
-            result2 = 13
-        elif (line == '10' and column == '0111'):
-            result2 = 1
-        elif (line == '10' and column == '1000'):
-            result2 = 5
-        elif (line == '10' and column == '1001'):
-            result2 = 8
-        elif (line == '10' and column == '1010'):
-            result2 = 12
-        elif (line == '10' and column == '1011'):
-            result2 = 6
-        elif (line == '10' and column == '1100'):
-            result2 = 9
-        elif (line == '10' and column == '1101'):
-            result2 = 3
-        elif (line == '10' and column == '1110'):
-            result2 = 2
-        elif (line == '10' and column == '1111'):
-            result2 = 15
+        ]
 
-        if (line == '11' and column == '0000'):
-            result2 = 13
-        elif (line == '11' and column == '0001'):
-            result2 = 8
-        elif (line == '11' and column == '0010'):
-            result2 = 10
-        elif (line == '11' and column == '0011'):
-            result2 = 1
-        elif (line == '11' and column == '0100'):
-            result2 = 3
-        elif (line == '11' and column == '0101'):
-            result2 = 15
-        elif (line == '11' and column == '0110'):
-            result2 = 4
-        elif (line == '11' and column == '0111'):
-            result2 = 2
-        elif (line == '11' and column == '1000'):
-            result2 = 11
-        elif (line == '11' and column == '1001'):
-            result2 = 6
-        elif (line == '11' and column == '1010'):
-            result2 = 7
-        elif (line == '11' and column == '1011'):
-            result2 = 12
-        elif (line == '11' and column == '1100'):
-            result2 = 0
-        elif (line == '11' and column == '1101'):
-            result2 = 5
-        elif (line == '11' and column == '1110'):
-            result2 = 14
-        elif (line == '11' and column == '1111'):
-            result2 = 9
+        res = 0
+        i = 0
+        mas = [
+            0b111111000000000000000000000000000000000000000000,
+            0b000000111111000000000000000000000000000000000000,
+            0b000000000000111111000000000000000000000000000000,
+            0b000000000000000000111111000000000000000000000000,
+            0b000000000000000000000000111111000000000000000000,
+            0b000000000000000000000000000000111111000000000000,
+            0b000000000000000000000000000000000000111111000000,
+            0b000000000000000000000000000000000000000000111111
+        ]
+        while i < 8:
+            col1 = ((result & mas[i]) >> (42-i*6))
+            index = ((col1 & 0b100000) << 0) | \
+                    ((col1 & 0b000001) << 4) | \
+                    ((col1 & 0b011110) >> 1)
+            res = res ^ ((Sbox[index+64*i] & 0b111111) << (42-i*6))
+            i=i+1
 
-        # S3
-        test = (result)[12:-30]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '00' and column == '0000'):
-            result3 = 10
-        elif (line == '00' and column == '0001'):
-            result3 = 0
-        elif (line == '00' and column == '0010'):
-            result3 = 9
-        elif (line == '00' and column == '0011'):
-            result3 = 14
-        elif (line == '00' and column == '0100'):
-            result3 = 6
-        elif (line == '00' and column == '0101'):
-            result3 = 3
-        elif (line == '00' and column == '0110'):
-            result3 = 15
-        elif (line == '00' and column == '0111'):
-            result3 = 5
-        elif (line == '00' and column == '1000'):
-            result3 = 1
-        elif (line == '00' and column == '1001'):
-            result3 = 13
-        elif (line == '00' and column == '1010'):
-            result3 = 7
-        elif (line == '00' and column == '1011'):
-            result3 = 11
-        elif (line == '00' and column == '1100'):
-            result3 = 12
-        elif (line == '00' and column == '1101'):
-            result3 = 4
-        elif (line == '00' and column == '1110'):
-            result3 = 2
-        elif (line == '00' and column == '1111'):
-            result3 = 8
-
-        if (line == '01' and column == '0000'):
-            result3 = 13
-        elif (line == '01' and column == '0001'):
-            result3 = 7
-        elif (line == '01' and column == '0010'):
-            result3 = 0
-        elif (line == '01' and column == '0011'):
-            result3 = 9
-        elif (line == '01' and column == '0100'):
-            result3 = 3
-        elif (line == '01' and column == '0101'):
-            result3 = 4
-        elif (line == '01' and column == '0110'):
-            result3 = 6
-        elif (line == '01' and column == '0111'):
-            result3 = 10
-        elif (line == '01' and column == '1000'):
-            result3 = 2
-        elif (line == '01' and column == '1001'):
-            result3 = 8
-        elif (line == '01' and column == '1010'):
-            result3 = 5
-        elif (line == '01' and column == '1011'):
-            result3 = 14
-        elif (line == '01' and column == '1100'):
-            result3 = 12
-        elif (line == '01' and column == '1101'):
-            result3 = 11
-        elif (line == '01' and column == '1110'):
-            result3 = 15
-        elif (line == '01' and column == '1111'):
-            result3 = 1
-
-        if (line == '10' and column == '0000'):
-            result3 = 13
-        elif (line == '10' and column == '0001'):
-            result3 = 6
-        elif (line == '10' and column == '0010'):
-            result3 = 4
-        elif (line == '10' and column == '0011'):
-            result3 = 9
-        elif (line == '10' and column == '0100'):
-            result3 = 8
-        elif (line == '10' and column == '0101'):
-            result3 = 15
-        elif (line == '10' and column == '0110'):
-            result3 = 3
-        elif (line == '10' and column == '0111'):
-            result3 = 0
-        elif (line == '10' and column == '1000'):
-            result3 = 11
-        elif (line == '10' and column == '1001'):
-            result3 = 1
-        elif (line == '10' and column == '1010'):
-            result3 = 2
-        elif (line == '10' and column == '1011'):
-            result3 = 12
-        elif (line == '10' and column == '1100'):
-            result3 = 5
-        elif (line == '10' and column == '1101'):
-            result3 = 10
-        elif (line == '10' and column == '1110'):
-            result3 = 14
-        elif (line == '10' and column == '1111'):
-            result3 = 7
-
-        if (line == '11' and column == '0000'):
-            result3 = 1
-        elif (line == '11' and column == '0001'):
-            result3 = 10
-        elif (line == '11' and column == '0010'):
-            result3 = 13
-        elif (line == '11' and column == '0011'):
-            result3 = 0
-        elif (line == '11' and column == '0100'):
-            result3 = 6
-        elif (line == '11' and column == '0101'):
-            result3 = 9
-        elif (line == '11' and column == '0110'):
-            result3 = 8
-        elif (line == '11' and column == '0111'):
-            result3 = 7
-        elif (line == '11' and column == '1000'):
-            result3 = 4
-        elif (line == '11' and column == '1001'):
-            result3 = 15
-        elif (line == '11' and column == '1010'):
-            result3 = 14
-        elif (line == '11' and column == '1011'):
-            result3 = 3
-        elif (line == '11' and column == '1100'):
-            result3 = 11
-        elif (line == '11' and column == '1101'):
-            result3 = 5
-        elif (line == '11' and column == '1110'):
-            result3 = 2
-        elif (line == '11' and column == '1111'):
-            result3 = 12
-
-        # S4
-        test = (result)[18:-24]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '00' and column == '0000'):
-            result4 = 7
-        elif (line == '00' and column == '0001'):
-            result4 = 13
-        elif (line == '00' and column == '0010'):
-            result4 = 14
-        elif (line == '00' and column == '0011'):
-            result4 = 3
-        elif (line == '00' and column == '0100'):
-            result4 = 0
-        elif (line == '00' and column == '0101'):
-            result4 = 6
-        elif (line == '00' and column == '0110'):
-            result4 = 9
-        elif (line == '00' and column == '0111'):
-            result4 = 10
-        elif (line == '00' and column == '1000'):
-            result4 = 1
-        elif (line == '00' and column == '1001'):
-            result4 = 2
-        elif (line == '00' and column == '1010'):
-            result4 = 8
-        elif (line == '00' and column == '1011'):
-            result4 = 5
-        elif (line == '00' and column == '1100'):
-            result4 = 11
-        elif (line == '00' and column == '1101'):
-            result4 = 12
-        elif (line == '00' and column == '1110'):
-            result4 = 4
-        elif (line == '00' and column == '1111'):
-            result4 = 15
-
-        if (line == '01' and column == '0000'):
-            result4 = 13
-        elif (line == '01' and column == '0001'):
-            result4 = 8
-        elif (line == '01' and column == '0010'):
-            result4 = 11
-        elif (line == '01' and column == '0011'):
-            result4 = 5
-        elif (line == '01' and column == '0100'):
-            result4 = 6
-        elif (line == '01' and column == '0101'):
-            result4 = 15
-        elif (line == '01' and column == '0110'):
-            result4 = 0
-        elif (line == '01' and column == '0111'):
-            result4 = 3
-        elif (line == '01' and column == '1000'):
-            result4 = 4
-        elif (line == '01' and column == '1001'):
-            result4 = 7
-        elif (line == '01' and column == '1010'):
-            result4 = 2
-        elif (line == '01' and column == '1011'):
-            result4 = 12
-        elif (line == '01' and column == '1100'):
-            result4 = 1
-        elif (line == '01' and column == '1101'):
-            result4 = 10
-        elif (line == '01' and column == '1110'):
-            result4 = 14
-        elif (line == '01' and column == '1111'):
-            result4 = 9
-
-        if (line == '10' and column == '0000'):
-            result4 = 10
-        elif (line == '10' and column == '0001'):
-            result4 = 6
-        elif (line == '10' and column == '0010'):
-            result4 = 9
-        elif (line == '10' and column == '0011'):
-            result4 = 0
-        elif (line == '10' and column == '0100'):
-            result4 = 12
-        elif (line == '10' and column == '0101'):
-            result4 = 11
-        elif (line == '10' and column == '0110'):
-            result4 = 7
-        elif (line == '10' and column == '0111'):
-            result4 = 13
-        elif (line == '10' and column == '1000'):
-            result4 = 15
-        elif (line == '10' and column == '1001'):
-            result4 = 1
-        elif (line == '10' and column == '1010'):
-            result4 = 3
-        elif (line == '10' and column == '1011'):
-            result4 = 14
-        elif (line == '10' and column == '1100'):
-            result4 = 5
-        elif (line == '10' and column == '1101'):
-            result4 = 2
-        elif (line == '10' and column == '1110'):
-            result4 = 8
-        elif (line == '10' and column == '1111'):
-            result4 = 4
-
-        if (line == '11' and column == '0000'):
-            result4 = 3
-        elif (line == '11' and column == '0001'):
-            result4 = 15
-        elif (line == '11' and column == '0010'):
-            result4 = 0
-        elif (line == '11' and column == '0011'):
-            result4 = 6
-        elif (line == '11' and column == '0100'):
-            result4 = 10
-        elif (line == '11' and column == '0101'):
-            result4 = 1
-        elif (line == '11' and column == '0110'):
-            result4 = 13
-        elif (line == '11' and column == '0111'):
-            result4 = 8
-        elif (line == '11' and column == '1000'):
-            result4 = 9
-        elif (line == '11' and column == '1001'):
-            result4 = 4
-        elif (line == '11' and column == '1010'):
-            result4 = 5
-        elif (line == '11' and column == '1011'):
-            result4 = 11
-        elif (line == '11' and column == '1100'):
-            result4 = 12
-        elif (line == '11' and column == '1101'):
-            result4 = 7
-        elif (line == '11' and column == '1110'):
-            result4 = 2
-        elif (line == '11' and column == '1111'):
-            result4 = 14
-
-        # S5
-        test = (result)[24:-18]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '00' and column == '0000'):
-            result5 = 2
-        elif (line == '00' and column == '0001'):
-            result5 = 12
-        elif (line == '00' and column == '0010'):
-            result5 = 4
-        elif (line == '00' and column == '0011'):
-            result5 = 1
-        elif (line == '00' and column == '0100'):
-            result5 = 7
-        elif (line == '00' and column == '0101'):
-            result5 = 10
-        elif (line == '00' and column == '0110'):
-            result5 = 11
-        elif (line == '00' and column == '0111'):
-            result5 = 6
-        elif (line == '00' and column == '1000'):
-            result5 = 8
-        elif (line == '00' and column == '1001'):
-            result5 = 5
-        elif (line == '00' and column == '1010'):
-            result5 = 3
-        elif (line == '00' and column == '1011'):
-            result5 = 15
-        elif (line == '00' and column == '1100'):
-            result5 = 13
-        elif (line == '00' and column == '1101'):
-            result5 = 0
-        elif (line == '00' and column == '1110'):
-            result5 = 14
-        elif (line == '00' and column == '1111'):
-            result5 = 9
-
-        if (line == '01' and column == '0000'):
-            result5 = 14
-        elif (line == '01' and column == '0001'):
-            result5 = 11
-        elif (line == '01' and column == '0010'):
-            result5 = 2
-        elif (line == '01' and column == '0011'):
-            result5 = 12
-        elif (line == '01' and column == '0100'):
-            result5 = 4
-        elif (line == '01' and column == '0101'):
-            result5 = 7
-        elif (line == '01' and column == '0110'):
-            result5 = 13
-        elif (line == '01' and column == '0111'):
-            result5 = 1
-        elif (line == '01' and column == '1000'):
-            result5 = 5
-        elif (line == '01' and column == '1001'):
-            result5 = 0
-        elif (line == '01' and column == '1010'):
-            result5 = 15
-        elif (line == '01' and column == '1011'):
-            result5 = 10
-        elif (line == '01' and column == '1100'):
-            result5 = 3
-        elif (line == '01' and column == '1101'):
-            result5 = 9
-        elif (line == '01' and column == '1110'):
-            result5 = 8
-        elif (line == '01' and column == '1111'):
-            result5 = 6
-
-        if (line == '10' and column == '0000'):
-            result5 = 4
-        elif (line == '10' and column == '0001'):
-            result5 = 2
-        elif (line == '10' and column == '0010'):
-            result5 = 1
-        elif (line == '10' and column == '0011'):
-            result5 = 11
-        elif (line == '10' and column == '0100'):
-            result5 = 10
-        elif (line == '10' and column == '0101'):
-            result5 = 13
-        elif (line == '10' and column == '0110'):
-            result5 = 7
-        elif (line == '10' and column == '0111'):
-            result5 = 8
-        elif (line == '10' and column == '1000'):
-            result5 = 15
-        elif (line == '10' and column == '1001'):
-            result5 = 9
-        elif (line == '10' and column == '1010'):
-            result5 = 12
-        elif (line == '10' and column == '1011'):
-            result5 = 5
-        elif (line == '10' and column == '1100'):
-            result5 = 6
-        elif (line == '10' and column == '1101'):
-            result5 = 3
-        elif (line == '10' and column == '1110'):
-            result5 = 0
-        elif (line == '10' and column == '1111'):
-            result5 = 14
-
-        if (line == '11' and column == '0000'):
-            result5 = 11
-        elif (line == '11' and column == '0001'):
-            result5 = 8
-        elif (line == '11' and column == '0010'):
-            result5 = 12
-        elif (line == '11' and column == '0011'):
-            result5 = 7
-        elif (line == '11' and column == '0100'):
-            result5 = 1
-        elif (line == '11' and column == '0101'):
-            result5 = 14
-        elif (line == '11' and column == '0110'):
-            result5 = 2
-        elif (line == '11' and column == '0111'):
-            result5 = 13
-        elif (line == '11' and column == '1000'):
-            result5 = 6
-        elif (line == '11' and column == '1001'):
-            result5 = 15
-        elif (line == '11' and column == '1010'):
-            result5 = 0
-        elif (line == '11' and column == '1011'):
-            result5 = 9
-        elif (line == '11' and column == '1100'):
-            result5 = 10
-        elif (line == '11' and column == '1101'):
-            result5 = 4
-        elif (line == '11' and column == '1110'):
-            result5 = 5
-        elif (line == '11' and column == '1111'):
-            result5 = 3
-
-        # S6
-        test = (result)[30:-12]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '00' and column == '0000'):
-            result6 = 12
-        elif (line == '00' and column == '0001'):
-            result6 = 1
-        elif (line == '00' and column == '0010'):
-            result6 = 10
-        elif (line == '00' and column == '0011'):
-            result6 = 15
-        elif (line == '00' and column == '0100'):
-            result6 = 9
-        elif (line == '00' and column == '0101'):
-            result6 = 2
-        elif (line == '00' and column == '0110'):
-            result6 = 6
-        elif (line == '00' and column == '0111'):
-            result6 = 8
-        elif (line == '00' and column == '1000'):
-            result6 = 0
-        elif (line == '00' and column == '1001'):
-            result6 = 13
-        elif (line == '00' and column == '1010'):
-            result6 = 3
-        elif (line == '00' and column == '1011'):
-            result6 = 4
-        elif (line == '00' and column == '1100'):
-            result6 = 14
-        elif (line == '00' and column == '1101'):
-            result6 = 7
-        elif (line == '00' and column == '1110'):
-            result6 = 5
-        elif (line == '00' and column == '1111'):
-            result6 = 11
-
-        if (line == '01' and column == '0000'):
-            result6 = 10
-        elif (line == '01' and column == '0001'):
-            result6 = 15
-        elif (line == '01' and column == '0010'):
-            result6 = 4
-        elif (line == '01' and column == '0011'):
-            result6 = 2
-        elif (line == '01' and column == '0100'):
-            result6 = 7
-        elif (line == '01' and column == '0101'):
-            result6 = 12
-        elif (line == '01' and column == '0110'):
-            result6 = 9
-        elif (line == '01' and column == '0111'):
-            result6 = 5
-        elif (line == '01' and column == '1000'):
-            result6 = 6
-        elif (line == '01' and column == '1001'):
-            result6 = 1
-        elif (line == '01' and column == '1010'):
-            result6 = 13
-        elif (line == '01' and column == '1011'):
-            result6 = 14
-        elif (line == '01' and column == '1100'):
-            result6 = 0
-        elif (line == '01' and column == '1101'):
-            result6 = 11
-        elif (line == '01' and column == '1110'):
-            result6 = 3
-        elif (line == '01' and column == '1111'):
-            result6 = 8
-
-        if (line == '10' and column == '0000'):
-            result6 = 9
-        elif (line == '10' and column == '0001'):
-            result6 = 14
-        elif (line == '10' and column == '0010'):
-            result6 = 15
-        elif (line == '10' and column == '0011'):
-            result6 = 5
-        elif (line == '10' and column == '0100'):
-            result6 = 2
-        elif (line == '10' and column == '0101'):
-            result6 = 8
-        elif (line == '10' and column == '0110'):
-            result6 = 12
-        elif (line == '10' and column == '0111'):
-            result6 = 3
-        elif (line == '10' and column == '1000'):
-            result6 = 7
-        elif (line == '10' and column == '1001'):
-            result6 = 0
-        elif (line == '10' and column == '1010'):
-            result6 = 4
-        elif (line == '10' and column == '1011'):
-            result6 = 10
-        elif (line == '10' and column == '1100'):
-            result6 = 1
-        elif (line == '10' and column == '1101'):
-            result6 = 13
-        elif (line == '10' and column == '1110'):
-            result6 = 11
-        elif (line == '10' and column == '1111'):
-            result6 = 6
-
-        if (line == '11' and column == '0000'):
-            result6 = 4
-        elif (line == '11' and column == '0001'):
-            result6 = 3
-        elif (line == '11' and column == '0010'):
-            result6 = 2
-        elif (line == '11' and column == '0011'):
-            result6 = 12
-        elif (line == '11' and column == '0100'):
-            result6 = 9
-        elif (line == '11' and column == '0101'):
-            result6 = 5
-        elif (line == '11' and column == '0110'):
-            result6 = 15
-        elif (line == '11' and column == '0111'):
-            result6 = 10
-        elif (line == '11' and column == '1000'):
-            result6 = 11
-        elif (line == '11' and column == '1001'):
-            result6 = 14
-        elif (line == '11' and column == '1010'):
-            result6 = 1
-        elif (line == '11' and column == '1011'):
-            result6 = 7
-        elif (line == '11' and column == '1100'):
-            result6 = 6
-        elif (line == '11' and column == '1101'):
-            result6 = 0
-        elif (line == '11' and column == '1110'):
-            result6 = 8
-        elif (line == '11' and column == '1111'):
-            result6 = 13
-
-        # S7
-        test = (result)[36:-6]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '00' and column == '0000'):
-            result7 = 4
-        elif (line == '00' and column == '0001'):
-            result7 = 11
-        elif (line == '00' and column == '0010'):
-            result7 = 2
-        elif (line == '00' and column == '0011'):
-            result7 = 14
-        elif (line == '00' and column == '0100'):
-            result7 = 15
-        elif (line == '00' and column == '0101'):
-            result7 = 0
-        elif (line == '00' and column == '0110'):
-            result7 = 8
-        elif (line == '00' and column == '0111'):
-            result7 = 13
-        elif (line == '00' and column == '1000'):
-            result7 = 3
-        elif (line == '00' and column == '1001'):
-            result7 = 12
-        elif (line == '00' and column == '1010'):
-            result7 = 9
-        elif (line == '00' and column == '1011'):
-            result7 = 7
-        elif (line == '00' and column == '1100'):
-            result7 = 5
-        elif (line == '00' and column == '1101'):
-            result7 = 10
-        elif (line == '00' and column == '1110'):
-            result7 = 6
-        elif (line == '00' and column == '1111'):
-            result7 = 1
-
-        if (line == '01' and column == '0000'):
-            result7 = 13
-        elif (line == '01' and column == '0001'):
-            result7 = 0
-        elif (line == '01' and column == '0010'):
-            result7 = 11
-        elif (line == '01' and column == '0011'):
-            result7 = 7
-        elif (line == '01' and column == '0100'):
-            result7 = 4
-        elif (line == '01' and column == '0101'):
-            result7 = 9
-        elif (line == '01' and column == '0110'):
-            result7 = 1
-        elif (line == '01' and column == '0111'):
-            result7 = 10
-        elif (line == '01' and column == '1000'):
-            result7 = 14
-        elif (line == '01' and column == '1001'):
-            result7 = 3
-        elif (line == '01' and column == '1010'):
-            result7 = 5
-        elif (line == '01' and column == '1011'):
-            result7 = 12
-        elif (line == '01' and column == '1100'):
-            result7 = 2
-        elif (line == '01' and column == '1101'):
-            result7 = 15
-        elif (line == '01' and column == '1110'):
-            result7 = 8
-        elif (line == '01' and column == '1111'):
-            result7 = 6
-
-        if (line == '10' and column == '0000'):
-            result7 = 1
-        elif (line == '10' and column == '0001'):
-            result7 = 4
-        elif (line == '10' and column == '0010'):
-            result7 = 11
-        elif (line == '10' and column == '0011'):
-            result7 = 13
-        elif (line == '10' and column == '0100'):
-            result7 = 12
-        elif (line == '10' and column == '0101'):
-            result7 = 3
-        elif (line == '10' and column == '0110'):
-            result7 = 7
-        elif (line == '10' and column == '0111'):
-            result7 = 14
-        elif (line == '10' and column == '1000'):
-            result7 = 10
-        elif (line == '10' and column == '1001'):
-            result7 = 15
-        elif (line == '10' and column == '1010'):
-            result7 = 6
-        elif (line == '10' and column == '1011'):
-            result7 = 8
-        elif (line == '10' and column == '1100'):
-            result7 = 0
-        elif (line == '10' and column == '1101'):
-            result7 = 5
-        elif (line == '10' and column == '1110'):
-            result7 = 9
-        elif (line == '10' and column == '1111'):
-            result7 = 2
-
-        if (line == '11' and column == '0000'):
-            result7 = 6
-        elif (line == '11' and column == '0001'):
-            result7 = 11
-        elif (line == '11' and column == '0010'):
-            result7 = 13
-        elif (line == '11' and column == '0011'):
-            result7 = 8
-        elif (line == '11' and column == '0100'):
-            result7 = 1
-        elif (line == '11' and column == '0101'):
-            result7 = 4
-        elif (line == '11' and column == '0110'):
-            result7 = 10
-        elif (line == '11' and column == '0111'):
-            result7 = 7
-        elif (line == '11' and column == '1000'):
-            result7 = 9
-        elif (line == '11' and column == '1001'):
-            result7 = 5
-        elif (line == '11' and column == '1010'):
-            result7 = 0
-        elif (line == '11' and column == '1011'):
-            result7 = 15
-        elif (line == '11' and column == '1100'):
-            result7 = 14
-        elif (line == '11' and column == '1101'):
-            result7 = 2
-        elif (line == '11' and column == '1110'):
-            result7 = 3
-        elif (line == '11' and column == '1111'):
-            result7 = 12
-
-        # S8
-        test = (result)[42:]
-        line = test[0] + test[-1]
-        column = test[1:-1]
-
-        if (line == '01' and column == '0000'):
-            result8 = 13
-        elif (line == '01' and column == '0001'):
-            result8 = 2
-        elif (line == '01' and column == '0010'):
-            result8 = 8
-        elif (line == '01' and column == '0011'):
-            result8 = 4
-        elif (line == '01' and column == '0100'):
-            result8 = 6
-        elif (line == '01' and column == '0101'):
-            result8 = 15
-        elif (line == '01' and column == '0110'):
-            result8 = 11
-        elif (line == '01' and column == '0111'):
-            result8 = 1
-        elif (line == '01' and column == '1000'):
-            result8 = 10
-        elif (line == '01' and column == '1001'):
-            result8 = 9
-        elif (line == '01' and column == '1010'):
-            result8 = 3
-        elif (line == '01' and column == '1011'):
-            result8 = 14
-        elif (line == '01' and column == '1100'):
-            result8 = 5
-        elif (line == '01' and column == '1101'):
-            result8 = 0
-        elif (line == '01' and column == '1110'):
-            result8 = 12
-        elif (line == '01' and column == '1111'):
-            result8 = 7
-
-        if (line == '10' and column == '0000'):
-            result8 = 1
-        elif (line == '10' and column == '0001'):
-            result8 = 15
-        elif (line == '10' and column == '0010'):
-            result8 = 13
-        elif (line == '10' and column == '0011'):
-            result8 = 8
-        elif (line == '10' and column == '0100'):
-            result8 = 10
-        elif (line == '10' and column == '0101'):
-            result8 = 3
-        elif (line == '10' and column == '0110'):
-            result8 = 7
-        elif (line == '10' and column == '0111'):
-            result8 = 4
-        elif (line == '10' and column == '1000'):
-            result8 = 12
-        elif (line == '10' and column == '1001'):
-            result8 = 5
-        elif (line == '10' and column == '1010'):
-            result8 = 6
-        elif (line == '10' and column == '1011'):
-            result8 = 11
-        elif (line == '10' and column == '1100'):
-            result8 = 0
-        elif (line == '10' and column == '1101'):
-            result8 = 14
-        elif (line == '10' and column == '1110'):
-            result8 = 9
-        elif (line == '10' and column == '1111'):
-            result8 = 2
-
-        if (line == '00' and column == '0000'):
-            result8 = 7
-        elif (line == '00' and column == '0001'):
-            result8 = 11
-        elif (line == '00' and column == '0010'):
-            result8 = 4
-        elif (line == '00' and column == '0011'):
-            result8 = 1
-        elif (line == '00' and column == '0100'):
-            result8 = 9
-        elif (line == '00' and column == '0101'):
-            result8 = 12
-        elif (line == '00' and column == '0110'):
-            result8 = 14
-        elif (line == '00' and column == '0111'):
-            result8 = 2
-        elif (line == '00' and column == '1000'):
-            result8 = 0
-        elif (line == '00' and column == '1001'):
-            result8 = 6
-        elif (line == '00' and column == '1010'):
-            result8 = 10
-        elif (line == '00' and column == '1011'):
-            result8 = 13
-        elif (line == '00' and column == '1100'):
-            result8 = 15
-        elif (line == '00' and column == '1101'):
-            result8 = 3
-        elif (line == '00' and column == '1110'):
-            result8 = 5
-        elif (line == '00' and column == '1111'):
-            result8 = 8
-
-        if (line == '11' and column == '0000'):
-            result8 = 2
-        elif (line == '11' and column == '0001'):
-            result8 = 1
-        elif (line == '11' and column == '0010'):
-            result8 = 14
-        elif (line == '11' and column == '0011'):
-            result8 = 7
-        elif (line == '11' and column == '0100'):
-            result8 = 4
-        elif (line == '11' and column == '0101'):
-            result8 = 10
-        elif (line == '11' and column == '0110'):
-            result8 = 8
-        elif (line == '11' and column == '0111'):
-            result8 = 13
-        elif (line == '11' and column == '1000'):
-            result8 = 15
-        elif (line == '11' and column == '1001'):
-            result8 = 12
-        elif (line == '11' and column == '1010'):
-            result8 = 9
-        elif (line == '11' and column == '1011'):
-            result8 = 0
-        elif (line == '11' and column == '1100'):
-            result8 = 3
-        elif (line == '11' and column == '1101'):
-            result8 = 5
-        elif (line == '11' and column == '1110'):
-            result8 = 6
-        elif (line == '11' and column == '1111'):
-            result8 = 11
-
-        if (len(bin(result1)[2:]) < 4):
-            a = len(bin(result1)[2:])
-            u = 4 - a
-            result1 = (u * '0') + bin(result1)[2:]
-        else:
-            result1 = bin(result1)[2:]
-
-        if (len(bin(result2)[2:]) < 4):
-            a = len(bin(result2)[2:])
-            u = 4 - a
-            result2 = (u * '0') + bin(result2)[2:]
-        else:
-            result2 = bin(result2)[2:]
-
-        if (len(bin(result3)[2:]) < 4):
-            a = len(bin(result3)[2:])
-            u = 4 - a
-            result3 = (u * '0') + bin(result3)[2:]
-        else:
-            result3 = bin(result3)[2:]
-
-        if (len(bin(result4)[2:]) < 4):
-            a = len(bin(result4)[2:])
-            u = 4 - a
-            result4 = (u * '0') + bin(result4)[2:]
-        else:
-            result4 = bin(result4)[2:]
-
-        if (len(bin(result5)[2:]) < 4):
-            a = len(bin(result5)[2:])
-            u = 4 - a
-            result5 = (u * '0') + bin(result5)[2:]
-        else:
-            result5 = bin(result5)[2:]
-
-        if (len(bin(result6)[2:]) < 4):
-            a = len(bin(result6)[2:])
-            u = 4 - a
-            result6 = (u * '0') + bin(result6)[2:]
-        else:
-            result6 = bin(result6)[2:]
-
-        if (len(bin(result7)[2:]) < 4):
-            a = len(bin(result7)[2:])
-            u = 4 - a
-            result7 = (u * '0') + bin(result7)[2:]
-        else:
-            result7 = bin(result7)[2:]
-
-        if (len(bin(result8)[2:]) < 4):
-            a = len(bin(result8)[2:])
-            u = 4 - a
-            result8 = (u * '0') + bin(result8)[2:]
-        else:
-            result8 = bin(result8)[2:]
-
-        result = result1 + result2 + result3 + result4 + result5 + result6 + result7 + result8
-
-        result = int(result, 2)
+        result = res
 
         # P-box
         result = ((result & 0b00000000000000010000000000000000) << 15) | \
@@ -1571,30 +477,49 @@ class small_des(object):
 
         return key_list
 
+    def Enc_file(self, file_path, file_path_enc):
 
+        f1 = open(file_path, 'rb')
+        f2 = open(file_path_enc, 'wb')
+        while 1:
+            temp = f1.read(8)
+            if not temp:
+                break
+            temp_number = int.from_bytes(temp, 'big')
+            temp_number = self.Enc(temp_number)
+            temp = temp_number.to_bytes(8, byteorder='big')
+            f2.write(temp)
 
-'''
-    def key_gen(self):
-        key_temp = self.key
-        key_list = []
-        i = 0
-        while i < self.round_amount:
-            key_temp = ((key_temp & 0b11111111111111111111111111111111111111111111111111111110) >> 1) | \
-                       ((key_temp & 0b00000000000000000000000000000000000000000000000000000001) << 55)
-            round_key = key_temp & 0b111111111111111111111111111111111111111111111111
-            key_list.append(round_key)
-            i = i + 1
-        #print(key_list)
-        return key_list
-'''
+        f1.close()
+        f2.close()
+
+    def Dec_file(self, file_path_enc, file_path_dec):
+
+        f1 = open(file_path_enc, 'rb')
+        f2 = open(file_path_dec, 'wb')
+        while 1:
+            temp = f1.read(8)
+            if not temp:
+                break
+            temp_number = int.from_bytes(temp, 'big')
+            temp_number = self.Dec(temp_number)
+            temp = temp_number.to_bytes(8, byteorder='big')
+            f2.write(temp)
+
+        f1.close()
+        f2.close()
+
 
 
 a = 11125411106087900573
 print(f'a = {a}')
 key = 324234234
 round_amount = 16
-DES = small_des(key_=key, round_amount_=round_amount)
+DES = big_des(key_=key, round_amount_=round_amount)
 b = DES.Enc(a)
 print(f'b = {b}')
 c = DES.Dec(b)
 print(f'c = {c}')
+
+d = DES.Enc_file('enc.txt', 'dec.txt')
+e = DES.Dec_file('dec.txt', 'new.txt')
