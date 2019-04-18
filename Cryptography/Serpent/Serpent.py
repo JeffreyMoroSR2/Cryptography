@@ -1,29 +1,27 @@
+import random
 from math import sqrt
 
 class Serpent(object):
-    def __init__(self, key_):
+    def __init__(self, key_, key_gen_flag = 1):
         self.temp = 0
-        self.key = key_ & 0xffffffffffffffffffffffffffffffff
+        self.key = key_ & 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        self.key_gen_flag = key_gen_flag
         self.round_keys = self.key_gen()
 
     def Enc(self, temp_):
         self.temp = temp_ & 0xffffffffffffffffffffffffffffffff
-        print(self.temp, ' - initial data')
 
         self.PblockBegin()
         self.Round()
         self.PblockEnd()
-        print(self.temp, ' - encrypted data')
         return self.temp
 
     def Dec(self, temp_):
         self.temp = temp_ & 0xffffffffffffffffffffffffffffffff
-        print(self.temp, ' - data for decryption')
 
         self.PblockBegin()
         self.DecRound()
         self.PblockEnd()
-        print(self.temp, ' - decrypted data')
         return self.temp
 
     def PblockBegin(self):
@@ -192,9 +190,10 @@ class Serpent(object):
         return x
 
     def key_gen(self):
-        if self.key.bit_length() < 256:
-            self.key = (self.key << 1) ^ 1
-            self.key = self.key << (256 - self.key.bit_length())
+        if self.key_gen_flag != 1:
+            if self.key.bit_length() < 256:
+                self.key = (self.key << 1) ^ 1
+                self.key = self.key << (256 - self.key.bit_length())
 
 
         block_less = []
@@ -235,9 +234,48 @@ class Serpent(object):
 
         return K
 
+    def get_random_key(self):
+        rand_key = random.randint(0, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+        if rand_key() < 256:
+            rand_key = (rand_key << 1) ^ 1
+            rand_key = rand_key << (256 - rand_key.bit_length())
 
-serpent = Serpent(9)
+        self.key = rand_key
 
-enc = serpent.Enc(100)
+
+    # Enc/Dec files
+    def Enc_file(self, file_path, file_path_enc):
+        f1 = open(file_path, 'rb')
+        f2 = open(file_path_enc, 'wb')
+        while 1:
+            temp = f1.read(16)
+            if not temp:
+                break
+            temp = temp if len(temp) == 16 else (temp + b'                ')[0:16:1]
+            temp_number = int.from_bytes(temp, 'big')
+            temp_number = self.Enc(temp_number)
+            temp = temp_number.to_bytes(16, byteorder='big')
+            f2.write(temp)
+        f1.close()
+        f2.close()
+
+    def Dec_file(self, file_path_enc, file_path_dec):
+        f1 = open(file_path_enc, 'rb')
+        f2 = open(file_path_dec, 'wb')
+        while 1:
+            temp = f1.read(16)
+            if not temp:
+                break
+            temp = temp if len(temp) == 16 else (temp + b'                ')[0:16:1]
+            temp_number = int.from_bytes(temp, 'big')
+            temp_number = self.Dec(temp_number)
+            temp = temp_number.to_bytes(16, byteorder='big')
+            f2.write(temp)
+        f1.close()
+        f2.close()
+
+serpent = Serpent(150, 1)
+
+enc = serpent.Enc_file('enc.txt', 'dec.txt')
 print('------------')
-dec = serpent.Dec(enc)
+dec = serpent.Dec_file('dec.txt', 'new.txt')
