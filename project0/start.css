@@ -1,0 +1,44 @@
+body{
+    background: url(background.jpg) no-repeat;
+    -moz-background-size: 100%;
+    -webkit-background-size: 100%; 
+    -o-background-size: 100%; 
+    background-size: 100%; 
+}
+
+.header{
+    margin-top: 0.5%;
+}
+.header > h1{
+    text-align: center;
+    font-family: fantasy;
+}
+.col-sm{
+    text-align: center;
+}
+
+.col-sm > a {
+    color: #898986;
+    font-family: sans-serif;
+}
+.col-sm > a:hover{
+    color: #147fc3;
+    text-decoration: none;
+}
+.main_content{
+    margin-top: 4%;
+    margin-left: 12%;
+    margin-right: 12%;
+    font-family: serif;
+    font-size: 30px;
+}
+img{
+    margin-top: 1%;
+    padding: 1%;
+    width: 32%;
+    height: 32%;
+}
+.main_content > a:hover{
+    width: 34%;
+    height: 34%;
+}

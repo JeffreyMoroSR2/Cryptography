@@ -1,0 +1,13 @@
+Flask
+Flask-Session
+psycopg2
+SQLAlchemy
+
+Additional packages:
+import os, requests
+
+
+from flask import Flask, session, render_template, request, jsonify, abort
+from flask_session import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker

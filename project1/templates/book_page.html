@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='book_page.css') }}">
+{% endblock %}
+
+
+{% block body%}
+<div class="loged">
+    <form action="{{ url_for('index') }}" method="get">
+    <h4>Hello {{ loged }}</h4> 
+    <button>Click to LogOut</button>
+    </form>
+</div>
+
+<div class="book_div">
+    <p>ISBN - {{ isbn }}</p>
+    <p>Title - {{ title }}</p>
+    <p>Author - {{ author }}</p>
+    <p>Publication Year - {{ year }}</p>
+    <p>Goodreads average rating - {{ average_rating }}</p>
+    <p>Goodreads number of ratings - {{ work_ratings_count }}</p>
+    
+</div>
+
+<div class="reviews">
+{% if reviews %}
+    <h3>Reviews from users!</h3>
+    {% for review in reviews %}
+    <p>{{review[2] }}: {{ review[0] }} - {{review[1]}} </p>
+    {% endfor %}
+    
+{% endif %}
+
+
+<title>Пример HTML формы</title>
+</head>
+<body>
+<form action="{{ url_for('book_page_commented', isbn=isbn) }}" method = "post" "commentform" id="commentform">
+<div class="rate">
+    <input type="radio" id="star5" name="rate" value="5" />
+    <label for="star5" title="text">5 stars</label>
+    <input type="radio" id="star4" name="rate" value="4" />
+    <label for="star4" title="text">4 stars</label>
+    <input type="radio" id="star3" name="rate" value="3" />
+    <label for="star3" title="text">3 stars</label>
+    <input type="radio" id="star2" name="rate" value="2" />
+    <label for="star2" title="text">2 stars</label>
+    <input type="radio" id="star1" name="rate" value="1" />
+    <label for="star1" title="text">1 star</label>
+</div>     
+    
+<div class="comment">        
+<textarea name="comment" id="comment" cols="48" rows="8"> </textarea>     
+<input name="submit" type="submit" id="submit" value="Send" />
+{% if error %}
+    <h2>You already left the review</h2>
+{% endif %}
+</div>
+</form>
+
+    
+</body>
+</html>
+
+{% endblock %}

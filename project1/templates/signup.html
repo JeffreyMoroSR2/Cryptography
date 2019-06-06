@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+{% endblock %}
+
+
+{% block body%}
+
+<div class="signup-page">
+  <div class="form">
+    <form class="signup-form" action = "{{ url_for('sign_up') }}" method="post" >
+      <h1>Sign Up</h1>
+      <input name = "username" type="text" placeholder="username"/>
+      <input name = "password" type="password" placeholder="password"/>
+        {% if error %}
+        <p class='error_gen'>Try other username/password</p>
+        {% endif %}
+      <button>Sign up</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

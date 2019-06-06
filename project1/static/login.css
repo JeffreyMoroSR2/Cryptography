@@ -1,0 +1,116 @@
+p{
+    color: black;
+}
+
+.form-1 {
+    width: 400px;
+    margin: 100px auto 70px;
+    padding: 20px;
+    position: relative;
+    background: #fffafa;
+}
+
+.form-1 h1 {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    padding-bottom: 8px;
+}
+.form-1 h1 .log-in, .form-1 h1 .signUp {
+    display: inline-block;
+    text-transform: uppercase;
+}
+ 
+.form-1 h1 .log-in {
+    color: darkorange;
+    padding-right: 2px;
+}
+ 
+.form-1 h1 .signUp {
+    color: orangered;
+    padding-left: 2px;
+}
+
+
+.form-1 .float {
+    width: 50%;
+    float: left;
+    padding-top: 15px;
+    border-top: 1px solid #ffa762;
+}
+
+ 
+.form-1 label i {
+    margin-right: 5px;
+    display: inline-block;
+    width: 10px;
+}
+
+.form-1 input[type=text], .form-1 input[type=password] {
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    display: block;
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 3px solid #ebe6e2;
+    border-radius: 5px;
+    transition: all 0.3s ease-out;
+}
+.form-1 input[type=text]:hover,
+.form-1 input[type=password]:hover {
+    border-color: #CCC;
+}
+ 
+.form-1 label:hover ~ input {
+    border-color: #CCC;
+} 
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+ 
+.form-1 input[type=submit],
+.form-1 .sign-up {
+    
+    width: 49%;
+    height: 38px;
+    float: left;
+    position: relative;
+ 
+    
+    box-shadow: inset 0 1px rgba(255,255,255,0.3);
+    border-radius: 3px;
+    cursor: pointer;
+ 
+    
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    line-height: 38px; 
+    text-align: center;
+    font-weight: bold;
+}
+ 
+.form-1 input[type=submit] {
+    margin-left: 1%;
+    background: linear-gradient(#fbd568, #ffb347);
+    border: 1px solid #f4ab4c;
+    color: #996319;
+    text-shadow: 0 1px rgba(255,255,255,0.3);
+}
+ 
+.form-1 .sign-up {
+    margin-right: 1%;
+    background: linear-gradient(#34a5cf, #2a8ac4);
+    border: 1px solid #2b8bc7;
+    color: #ffffff;
+    text-shadow: 0 -1px rgba(0,0,0,0.3);
+    text-decoration: none;
+}
+.form-1 .error_gen{
+    text-align: center;
+}

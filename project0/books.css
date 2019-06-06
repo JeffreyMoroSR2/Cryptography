@@ -1,0 +1,38 @@
+body{
+    background: url(background.jpg) no-repeat;
+    -moz-background-size: 100%;
+    -webkit-background-size: 100%; 
+    -o-background-size: 100%; 
+    background-size: 100%; 
+}
+.header{
+    margin-top: 0.5%;
+}
+h1{
+    text-align: center;
+    font-family: fantasy;
+}
+.col-sm{
+    text-align: center;
+}
+
+.col-sm > a {
+    color: #898986;
+    font-family: sans-serif;
+}
+.col-sm > a:hover{
+    color: #147fc3;
+    text-decoration: none;
+}
+.top-books{
+    margin-top: 50px;
+}
+.top-books > ol{
+    margin-top: 20px;
+}
+h3, h4{
+    font-family: fantasy;
+}
+table{
+    font-family: inherit;
+}

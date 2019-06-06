@@ -1,0 +1,45 @@
+* {box-sizing: border-box;}
+form {
+  position: relative;
+  width: 300px;
+  margin: 0 auto;
+}
+input {
+  width: 100%;
+  height: 42px;
+  padding-left: 10px;
+  border: 2px solid #7BA7AB;
+  border-radius: 5px;
+  outline: none;
+  background: #F9F0DA;
+  color: #9E9C9C;
+}
+.but {
+  position: absolute; 
+  top: 0;
+  right: 0px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: #9135d6;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+.loged{
+    position:absolute;
+    top:0;
+    right:0;
+    color: #ffa762;
+}
+.loged button{
+    color: red;
+    background:#cdc7ff;
+}
+.books{
+    padding-top: 30px;
+    text-align: center;
+}
+.books ol a{
+    color: aliceblue;
+    background-color: #6b6b6b;
+}
